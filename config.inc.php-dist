@@ -1,0 +1,98 @@
+<?php
+// var_export($_SERVER);
+
+// DATABASE - MAIN LiCR
+define ( 'DEBUG', FALSE );
+if (! defined ( 'ENVIRONMENT' )) {
+  if (isset ( $_SERVER ['SERVER_NAME'] )) {
+    switch ($_SERVER ['SERVER_NAME']) {
+      case 'a.server.url.here' :
+      case 'b.server.url.here' : //for openreadings
+      case 'c.server.url.here' : //for openreadings
+      case 'd.server.url.here' : //for openreadings
+        define ( 'ENVIRONMENT', 'production' );
+        break;
+      case 'dev-a.server.url.here' :
+        define ( 'ENVIRONMENT', 'development' );
+        break;
+      case 'stg-a.server.url.here' :
+        define ( 'ENVIRONMENT', 'stg' );
+        break;
+      case 'verf-a.server.url.here' :
+        define ( 'ENVIRONMENT', 'verf' );
+        break;
+      default :
+        die ( 'No environment available for ' . $_SERVER ['SERVER_NAME'] );
+    }
+  } else {
+    $mydir = dirname ( __FILE__ );
+    if (gethostname () == 'a.server.url.here') {
+      if ($mydir == '/usr/local/licr')
+        define ( 'ENVIRONMENT', 'verf' );
+      if ($mydir == '/usr/local/licr')
+        define ( 'ENVIRONMENT', 'production' );
+    } elseif (gethostname () == 'a.server.url.here') {
+      if ($mydir == '/usr/local/licr')
+        define ( 'ENVIRONMENT', 'stg' );
+      if ($mydir == '/usr/local/licr')
+        define ( 'ENVIRONMENT', 'development' );
+    }
+  }
+}
+if (! defined ( 'ENVIRONMENT' )) {
+  die ( 'Cannot determine environment! Server: ' . $_SERVER ['SERVER_NAME'] . ' Host: ' . gethostname () . ' Dir: ' . dirname ( __FILE ) . "\n" );
+}
+// die( ENVIRONMENT);
+
+// IDBox API access URL
+define ( 'IDBOX_API', 'URL_TO_YOUR_IDBOX' );
+
+//Mail
+define('SMTP_SERVER','SMTP_SERVER');
+define('EMAIL_FROM_ADDRESS','CREATE_A_LICR_EMAIL_ADDRESS_TO_USE_HERE');
+define('EMAIL_FROM_NAME','UBC Library Course Reserves');
+define('EMAIL_STATUS_CHANGE_SUBJECT','UBC Library Course Readings Item Status Change Report');
+
+switch (ENVIRONMENT) {
+  case 'production' :
+    define ( 'SYSTEM_NAME', 'UBC Library Course Reserves' );
+    define ( 'LICR_API', 'URL_TO_THIS_PROJECTS_API.PHP' );
+    define ( 'CR_URL', 'URL_TO_COURSE_RESERVES_WEB_NO_TRAILING_SLASH' );
+    define ( 'CR_STAFF_URL', 'URL_TO_COURSE_RESERVES_ADMIN_NO_TRAILING_SLASH' );
+    define ( 'CRRESOLVE', 'https://cr.server.url.here/resolve/?target=' );
+    define ( 'BB1', 'THE_BLACKBOARD_SHIBBOLETH_ENDPOINT' . '' );
+    define ( 'BB2', 'THE_BLACKBOARD_TAB_URL' );
+    define ( 'GET_JSP', 'BLACKBOARD_BUILDING_BLOCK_MODULE_GET.JSP_FILE_THAT_LOADS_THE_PROJECT_CODE' );
+    define ( 'SUBSCRIPTIONS', FALSE );
+    define ( 'SUBSCRIPTION_LIMIT_TO', FALSE );
+    define('SECRET','ENTER_A_SECRET_HERE');
+    $mysql_host = 'name_of_server';
+    break;
+  case 'development' :
+    define ( 'SYSTEM_NAME', 'UBC Library Course Reserves (development)' );
+    define ( 'LICR_API', 'URL_TO_THIS_PROJECTS_API.PHP' );
+    define ( 'CR_URL', 'URL_TO_COURSE_RESERVES_WEB_NO_TRAILING_SLASH' );
+    define ( 'CR_STAFF_URL', 'URL_TO_COURSE_RESERVES_ADMIN_NO_TRAILING_SLASH' );
+    define ( 'CRRESOLVE', 'https://dev-cr.server.url.here/resolve/?target=' );
+    define ( 'BB1', 'THE_BLACKBOARD_SHIBBOLETH_ENDPOINT' . '' );
+    define ( 'BB2', 'THE_BLACKBOARD_TAB_URL' );
+    define ( 'GET_JSP', 'BLACKBOARD_BUILDING_BLOCK_MODULE_GET.JSP_FILE_THAT_LOADS_THE_PROJECT_CODE' );
+    define ( 'SUBSCRIPTIONS', TRUE );
+    define ( 'SUBSCRIPTION_LIMIT_TO', 'COMMA_SEPARATED_EMAIL_ADDRESSES_OF_SUPER_ADMINS' );
+    define('SECRET','ENTER_A_SECRET_HERE');
+    $mysql_host = 'name_of_server';
+    break;
+  default:
+  	die('No settings for '.ENVIRONMENT);
+}
+$whitelist_ips = array (
+    '123.45.6.789',
+);
+
+define ( 'DEFAULT_ITEM_STATUS', 'New Request' );
+
+$mysql_dsn = 'mysql:host=' . $mysql_host . ';dbname=licr';
+if (ENVIRONMENT == 'verf')
+  $mysql_dsn = 'mysql:host=' . $mysql_host . ';dbname=licr_verf';
+$mysql_user = 'MYSQL_USER';
+$mysql_password = 'MYSQL_PASSWORD';
